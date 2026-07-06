@@ -4,6 +4,9 @@ import '../services/storage_service.dart';
 // Navigation state
 final navigationIndexProvider = StateProvider<int>((ref) => 0);
 
+// Platform selection state (defaults to 'BGMI')
+final selectedPlatformProvider = StateProvider<String>((ref) => 'BGMI');
+
 // User input state for font generators
 final textInputProvider = StateProvider<String>((ref) => 'Gamer');
 

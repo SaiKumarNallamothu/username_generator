@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/storage_service.dart';
 import 'theme/custom_theme.dart';
-import 'screens/main_navigation.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +23,10 @@ class UserNameGeneratorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'UserNameGenerator',
+      title: 'Gaming Username Studio',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.darkTheme,
-      home: const MainNavigation(),
+      home: const SplashScreen(),
     );
   }
 }
