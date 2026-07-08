@@ -28,5 +28,11 @@ void main() {
     // Free Fire has limited support for '〆' (reduced score)
     final ffRatingWithInvalidChar = CompatibleGeneratorData.getRating('Sai〆', 'Free Fire');
     expect(ffRatingWithInvalidChar.stars, lessThan(4.0)); // Should be 3.0 (medium compatibility)
+
+    // 3. Check v4.0 interactive features data assets
+    expect(CompatibleGeneratorData.bioSlogans, isNotEmpty);
+    expect(CompatibleGeneratorData.signatureColors, isNotEmpty);
+    expect(CompatibleGeneratorData.signatureColors.first['code'], equals('FFD700')); // Gold
+    expect(CompatibleGeneratorData.rollerNames, contains('Shadow'));
   });
 }

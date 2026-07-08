@@ -251,4 +251,36 @@ class CompatibleGeneratorData {
 
     return decorated;
   }
+
+  // --- Builder Data ---
+  static const List<String> builderPrefixes = ['None', '亗', '乂', '『', '★', '♛', '✿', '〆'];
+  static const List<String> builderClanTags = ['None', 'RX', 'VLT', 'RGX', 'NXT', 'S8', '7H', 'SOUL', 'GODL'];
+  static const List<String> builderConnectors = ['None', '丨', '•', '×', '〆', '-'];
+  static const List<String> builderSuffixes = ['None', '亗', '乂', '々', 'メ', '★', '♛', '✿', '〆', '』'];
+
+  // --- Bio Slogans & Color Signatures ---
+  static const List<String> bioSlogans = [
+    'Dream. Grind. Win.',
+    'Only Headshots 🎯',
+    'Lagging But Deadly ⚡',
+    'Bush Camper Pro 🍃',
+    'No Recoil King 👑',
+    'Born to Rule ⚔️',
+    'Eat. Sleep. Game. Repeat.',
+    'Toxic Aimer 💀',
+  ];
+
+  static const List<Map<String, String>> signatureColors = [
+    {'name': 'Neon Gold', 'code': 'FFD700'},
+    {'name': 'Cyber Cyan', 'code': '00F2FE'},
+    {'name': 'Electric Purple', 'code': '8B5CF6'},
+    {'name': 'Neon Pink', 'code': 'FF007F'},
+    {'name': 'Acid Green', 'code': '22C55E'},
+    {'name': 'Fire Red', 'code': 'EF4444'},
+  ];
+
+  // --- Slot Roller Words ---
+  static const List<String> rollerPrefixes = ['亗', '乂', '★', '♛', '✿', 'メ', '〆'];
+  static const List<String> rollerNames = ['Shadow', 'Viper', 'Ghost', 'Dragon', 'Hunter', 'Rush', 'Wolf', 'Ace', 'Slayer', 'Phantom'];
+  static const List<String> rollerSuffixes = ['亗', '乂', '々', 'メ', '★', '〆', '•'];
 }

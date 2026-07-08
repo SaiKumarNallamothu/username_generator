@@ -339,7 +339,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
             SizedBox(
-              height: 110,
+              height: 124,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
@@ -366,23 +366,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         const Text('★★★★★', style: TextStyle(color: CustomTheme.accentColor, fontSize: 12)),
                         const Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            IconButton(
-                              icon: Icon(
-                                isFav ? Icons.favorite : Icons.favorite_border,
-                                color: isFav ? Colors.red : CustomTheme.textSecondary,
-                                size: 18,
+                            InkWell(
+                              onTap: () => ref.read(favoritesProvider.notifier).toggleFavorite(name),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  isFav ? Icons.favorite : Icons.favorite_border,
+                                  color: isFav ? Colors.red : CustomTheme.textSecondary,
+                                  size: 18,
+                                ),
                               ),
-                              onPressed: () => ref.read(favoritesProvider.notifier).toggleFavorite(name),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.copy, color: CustomTheme.accentColor, size: 18),
-                              onPressed: () => ClipboardHelper.copy(context, ref, name),
+                            const SizedBox(width: 4),
+                            InkWell(
+                              onTap: () => ClipboardHelper.copy(context, ref, name),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: const Icon(Icons.copy, color: CustomTheme.accentColor, size: 18),
+                              ),
                             ),
                           ],
                         )
@@ -419,13 +428,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Recent timeline activity
             if (history.isNotEmpty) ...[
-              Text(
-                'Recent Activity',
-                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Activity',
+                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref.read(historyProvider.notifier).clearHistory();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Recent activity cleared.')),
+                      );
+                    },
+                    child: Text(
+                      'Clear All',
+                      style: GoogleFonts.poppins(color: CustomTheme.errorColor, fontSize: 13),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
               Column(
                 children: history.take(3).map((name) {
                   return Padding(
