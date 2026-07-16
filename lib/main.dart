@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'services/storage_service.dart';
+import 'services/ad_service.dart';
 import 'theme/custom_theme.dart';
 import 'screens/splash_screen.dart';
 
@@ -9,6 +10,9 @@ void main() async {
   
   // Initialize storage (Hive + SharedPreferences)
   await StorageService.init();
+  
+  // Initialize AdMob Ad Service
+  await AdService.instance.init();
 
   runApp(
     const ProviderScope(
