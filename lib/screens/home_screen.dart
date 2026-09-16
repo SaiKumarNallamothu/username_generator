@@ -74,9 +74,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedPlatform = ref.watch(selectedPlatformProvider);
     final favorites = ref.watch(favoritesProvider);
     final history = ref.watch(historyProvider);
+    final currentInput = ref.watch(textInputProvider);
+
+    if (_searchController.text.isEmpty && currentInput != 'Gamer') {
+      _searchController.text = currentInput;
+    }
 
     return Scaffold(
       body: Padding(
@@ -167,70 +171,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Platform Selector chips
-            SizedBox(
-              height: 44,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: CompatibleGeneratorData.platforms.length,
-                itemBuilder: (context, index) {
-                  final platform = CompatibleGeneratorData.platforms[index];
-                  final isSelected = selectedPlatform == platform.name;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: AnimatedScale(
-                      scale: isSelected ? 1.05 : 1.0,
-                      duration: const Duration(milliseconds: 200),
-                      child: InkWell(
-                        onTap: () {
-                          ref.read(selectedPlatformProvider.notifier).state = platform.name;
-                        },
-                        borderRadius: BorderRadius.circular(20),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                          decoration: BoxDecoration(
-                            gradient: isSelected ? CustomTheme.goldGradient : null,
-                            color: isSelected ? null : CustomTheme.secondaryColor,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected ? CustomTheme.accentColor : Colors.white10,
-                            ),
-                            boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: CustomTheme.accentColor.withValues(alpha: 0.25),
-                                      blurRadius: 10,
-                                      spreadRadius: 1,
-                                    )
-                                  ]
-                                : null,
-                          ),
-                          child: Row(
-                            children: [
-                              Text(platform.icon, style: const TextStyle(fontSize: 14)),
-                              const SizedBox(width: 8),
-                              Text(
-                                platform.name,
-                                style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected ? CustomTheme.primaryColor : Colors.white,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-
             // Auto Scroll Banner
             SizedBox(
               height: 120,
@@ -250,42 +190,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ? CustomTheme.cyanGradient
                           : CustomTheme.goldCyanGradient;
 
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: grad,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: (item['gradient'] == 'gold' ? CustomTheme.accentColor : CustomTheme.cyberCyan)
-                              .withValues(alpha: 0.1),
-                          blurRadius: 10,
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          item['title']!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: CustomTheme.primaryColor,
+                  return InkWell(
+                    onTap: () {
+                      if (index == 0) {
+                        ref.read(generatorTabProvider.notifier).state = 0;
+                        ref.read(navigationIndexProvider.notifier).state = 1;
+                      } else if (index == 1) {
+                        ref.read(generatorTabProvider.notifier).state = 3;
+                        ref.read(navigationIndexProvider.notifier).state = 1;
+                      } else {
+                        ref.read(navigationIndexProvider.notifier).state = 2;
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: grad,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (item['gradient'] == 'gold' ? CustomTheme.accentColor : CustomTheme.cyberCyan)
+                                .withValues(alpha: 0.1),
+                            blurRadius: 10,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            item['title']!,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: CustomTheme.primaryColor,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          item['subtitle']!,
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: CustomTheme.primaryColor.withValues(alpha: 0.75),
+                          const SizedBox(height: 6),
+                          Text(
+                            item['subtitle']!,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: CustomTheme.primaryColor.withValues(alpha: 0.75),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -303,15 +257,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               childAspectRatio: 1.4,
               children: [
                 _buildActionTile('Generate Username', Icons.auto_awesome, CustomTheme.goldGradient, () {
+                  ref.read(generatorTabProvider.notifier).state = 0;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
                 _buildActionTile('Clan Tags', Icons.group, CustomTheme.cyanGradient, () {
+                  ref.read(generatorTabProvider.notifier).state = 3;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
                 _buildActionTile('AI Generator', Icons.psychology, CustomTheme.goldCyanGradient, () {
+                  ref.read(generatorTabProvider.notifier).state = 2;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
                 _buildActionTile('Symbols', Icons.emoji_symbols, CustomTheme.goldGradient, () {
+                  ref.read(generatorTabProvider.notifier).state = 6;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
                 _buildActionTile('Collections', Icons.grid_view_rounded, CustomTheme.cyanGradient, () {

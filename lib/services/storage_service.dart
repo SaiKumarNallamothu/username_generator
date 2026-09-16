@@ -5,8 +5,12 @@ class StorageService {
   static late Box _box;
   static late SharedPreferences _prefs;
 
-  static Future<void> init() async {
-    await Hive.initFlutter();
+  static Future<void> init([String? path]) async {
+    if (path != null) {
+      Hive.init(path);
+    } else {
+      await Hive.initFlutter();
+    }
     _box = await Hive.openBox('username_generator_box');
     _prefs = await SharedPreferences.getInstance();
   }

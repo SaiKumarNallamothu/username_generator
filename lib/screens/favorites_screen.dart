@@ -17,7 +17,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   String _query = '';
   String _selectedFolder = 'All';
 
-  final List<String> _folders = ['All', 'Pro', 'Clan', 'Royal', 'Anime', 'Funny'];
+  final List<String> _folders = ['All', 'Pro', 'Clan', 'Royal', 'Minimal', 'Esports', 'Anime', 'Funny'];
 
   bool _belongsToFolder(String name, String folder) {
     if (folder == 'All') return true;
@@ -25,15 +25,18 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     
     switch (folder) {
       case 'Royal':
-        return name.contains('♛') || name.contains('★') || name.contains('✿') || name.contains('♕');
+        return name.contains('♛') || name.contains('★') || name.contains('✿') || name.contains('♕') || name.contains('👑');
       case 'Clan':
-        return name.contains('丨') || name.contains('RX') || name.contains('VLT') || name.contains('S8') || name.contains('NXT') || name.contains('RGX');
+      case 'Esports':
+        return name.contains('丨') || name.contains('RX') || name.contains('VLT') || name.contains('S8') || name.contains('NXT') || name.contains('RGX') || name.contains('SOUL') || name.contains('GODL') || name.contains('TX');
+      case 'Minimal':
+        return name.contains('•') || name.contains('-') || name.contains('|') || name.contains('×');
       case 'Anime':
-        return lower.contains('uchiha') || lower.contains('senpai') || lower.contains('shadow') || lower.contains('gojo') || lower.contains('naruto');
+        return lower.contains('uchiha') || lower.contains('senpai') || lower.contains('shadow') || lower.contains('gojo') || lower.contains('naruto') || lower.contains('otaku') || lower.contains('kun');
       case 'Funny':
         return lower.contains('noob') || lower.contains('potato') || lower.contains('bot') || lower.contains('laggy') || lower.contains('camper');
       case 'Pro':
-        return name.contains('亗') || name.contains('乂') || name.contains('々') || name.contains('メ') || name.contains('〆');
+        return name.contains('亗') || name.contains('乂') || name.contains('々') || name.contains('メ') || name.contains('〆') || name.contains('『');
       default:
         return true;
     }

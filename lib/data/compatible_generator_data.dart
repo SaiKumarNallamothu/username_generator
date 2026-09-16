@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'username_templates.dart';
+
 class PlatformInfo {
   final String name;
   final String icon;
@@ -39,7 +42,7 @@ class CompatibleGeneratorData {
   // Specific symbols compatibility per platform
   // High compatibility (5 stars), Medium (3 stars), Limited (2 stars)
   static CompatibilityRating getRating(String username, String platform) {
-    int length = username.length;
+    int length = username.characters.length;
     final platformInfo = platforms.firstWhere((p) => p.name == platform, orElse: () => platforms[0]);
 
     if (length > platformInfo.maxChars) {
@@ -91,7 +94,7 @@ class CompatibleGeneratorData {
     final base = name.isEmpty ? 'Sai' : name;
     return {
       'Pro Players': [
-        '亗${base}亗',
+        '亗$base亗',
         'メ$base',
         '々$base',
         '亗$base',
@@ -105,11 +108,11 @@ class CompatibleGeneratorData {
         'SOUL丨$base',
       ],
       'Royal': [
-        '♛${base}♛',
+        '♛$base♛',
         '★$base★',
         '✿$base✿',
         '♕$base♕',
-        '★${base}★',
+        '★$base★',
       ],
       'Minimal': [
         '$base•',
@@ -149,8 +152,8 @@ class CompatibleGeneratorData {
     };
   }
 
-  // Programmatically generate 50-100 compatible combinations
-  static List<String> generateVariations(String name) {
+  // Programmatically generate 50-100 compatible combinations with category filtering support
+  static List<String> generateVariations(String name, {String category = 'All'}) {
     if (name.isEmpty) return [];
     
     final List<String> decorators = [
@@ -165,32 +168,53 @@ class CompatibleGeneratorData {
 
     List<String> list = [];
 
-    // 1. Single decorators
-    for (var d in decorators) {
-      list.add(d.replaceFirst('{}', name));
+    if (category == 'All' || category == 'Pro') {
+      for (var d in decorators) {
+        list.add(d.replaceFirst('{}', name));
+      }
+      list.add('亗乂$name乂亗');
+      list.add('★亗$name亗★');
+      list.add('✿乂$name乂✿');
+      list.add('メ$name々');
+      list.add('亗$name〆');
+      list.add('乂$name•');
     }
 
-    // 2. Prefixes + Name
-    for (var p in prefixes) {
-      list.add('$p$name');
-      // Mix prefix + Name + Suffix
-      list.add('$p$name•');
-      list.add('$p$name〆');
+    if (category == 'All' || category == 'Esports' || category == 'Clan') {
+      for (var p in prefixes) {
+        list.add('$p$name');
+        list.add('$p$name•');
+        list.add('$p$name〆');
+      }
     }
 
-    // 3. Double decorators mixes
-    list.add('亗乂${name}乂亗');
-    list.add('★亗${name}亗★');
-    list.add('✿乂${name}乂✿');
-    list.add('メ${name}々');
-    list.add('亗${name}〆');
-    list.add('乂${name}•');
+    if (category == 'Royal') {
+      list.addAll(['♛$name♛', '★$name★', '✿$name✿', '♕$name♕', '★$name★', '👑$name👑', '★亗$name亗★']);
+    }
 
-    // 4. Case variants + Suffixes
-    list.add('${name}々');
-    list.add('${name}〆');
-    list.add('•${name}•');
-    list.add('×${name}×');
+    if (category == 'Minimal') {
+      list.addAll(['$name•', '•$name•', '-$name-', '$name|', '$name×', '×$name×', '$name〆', '•$name']);
+    }
+
+    if (category == 'Funny') {
+      list.addAll(['Noob$name', 'Potato$name', 'Bot$name', 'Laggy$name', 'Camper$name', 'Noob$name•', 'Potato$name〆', 'Behind$name']);
+    }
+
+    if (category == 'Scary') {
+      list.addAll(['Dark$name', 'Ghost$name', 'Death$name', 'Night$name', 'Grim$name', 'Dark$name亗', 'Ghost$name乂', 'Death$name〆']);
+    }
+
+    if (category == 'Anime') {
+      list.addAll(['Uchiha$name', '${name}Senpai', 'Shadow$name', 'Hokage$name', 'Gojo$name', 'Uchiha$name々', 'Otaku$name', '${name}Kun']);
+    }
+
+    // Default fallbacks if category produced few items
+    if (list.length < 5) {
+      list.add('$name々');
+      list.add('$name〆');
+      list.add('•$name•');
+      list.add('×$name×');
+    }
 
     return list.toSet().toList(); // Ensure unique
   }
@@ -216,40 +240,9 @@ class CompatibleGeneratorData {
   };
 
   // AI suggestions naming prefix / suffix rules (Offline AI Generator)
-  static const List<String> aiPrefixes = [
-    'Fire', 'Dragon', 'Inferno', 'Shadow', 'Alpha', 'Ghost', 'Silent', 'Cyber', 'Neon', 'Viper'
-  ];
-
-  static const List<String> aiSuffixes = [
-    'Sai', 'Dragon', 'Ghost', 'King', 'Hunter', 'Rush', 'Wolf', 'Viper', 'Ace', 'Storm'
-  ];
-
-  static List<String> generateAISuggestions(String keyword) {
+  static List<String> generateAISuggestions(String keyword, [String category = 'Cool']) {
     if (keyword.isEmpty) return [];
-    List<String> list = [];
-
-    // Prefix suggestions
-    for (var prefix in aiPrefixes.take(4)) {
-      list.add('$prefix$keyword');
-    }
-    // Suffix suggestions
-    for (var suffix in aiSuffixes.take(4)) {
-      list.add('$keyword$suffix');
-    }
-    
-    // Programmatic mixes
-    list.add('${keyword}Dragon');
-    list.add('Fire$keyword');
-
-    // Automatically decorate them
-    List<String> decorated = [];
-    final List<String> sampleDecs = ['亗{}亗', '乂{}乂', '『{}』', 'メ{}', '{}々', '★{}★'];
-    for (int i = 0; i < list.length; i++) {
-      String dec = sampleDecs[i % sampleDecs.length];
-      decorated.add(dec.replaceFirst('{}', list[i]));
-    }
-
-    return decorated;
+    return UsernameTemplates.generateAISuggestions(keyword, category);
   }
 
   // --- Builder Data ---

@@ -7,6 +7,9 @@ final navigationIndexProvider = StateProvider<int>((ref) => 0);
 // Platform selection state (defaults to 'BGMI')
 final selectedPlatformProvider = StateProvider<String>((ref) => 'BGMI');
 
+// Active tab index for GeneratorScreen (defaults to 0)
+final generatorTabProvider = StateProvider<int>((ref) => 0);
+
 // User input state for font generators
 final textInputProvider = StateProvider<String>((ref) => 'Gamer');
 

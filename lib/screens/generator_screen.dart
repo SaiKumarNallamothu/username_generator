@@ -62,7 +62,12 @@ class _GeneratorScreenState extends ConsumerState<GeneratorScreen> with SingleTi
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging && mounted) {
+        ref.read(generatorTabProvider.notifier).state = _tabController.index;
+      }
+    });
     _inputController.addListener(() {
       ref.read(textInputProvider.notifier).state = _inputController.text;
     });
@@ -78,6 +83,15 @@ class _GeneratorScreenState extends ConsumerState<GeneratorScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    final activeTab = ref.watch(generatorTabProvider);
+    if (_tabController.index != activeTab && !_tabController.indexIsChanging) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_tabController.index != activeTab && mounted) {
+          _tabController.animateTo(activeTab);
+        }
+      });
+    }
+
     final textInput = ref.watch(textInputProvider);
     final selectedPlatform = ref.watch(selectedPlatformProvider);
     final favorites = ref.watch(favoritesProvider);
@@ -337,7 +351,7 @@ class _GeneratorScreenState extends ConsumerState<GeneratorScreen> with SingleTi
       return const Center(child: Text('Type a username above to load studio presets.'));
     }
 
-    final variations = CompatibleGeneratorData.generateVariations(textInput);
+    final variations = CompatibleGeneratorData.generateVariations(textInput, category: _selectedGeneratorCategory);
 
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
@@ -470,8 +484,244 @@ class _GeneratorScreenState extends ConsumerState<GeneratorScreen> with SingleTi
     );
   }
 
-  // --- 2. Decorator Tab ---
-  Widget _buildDecoratorTab() {
+  // --- 2. AI Suggestions tab ---
+  Widget _buildAISuggestions(List<String> favorites, bool isPremium) {
+    final suggestions = CompatibleGeneratorData.generateAISuggestions(_aiKeywordController.text, _selectedAICategory);
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Chat prompt glass field
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: CustomTheme.secondaryColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.bolt, color: CustomTheme.accentColor),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: _aiKeywordController,
+                    style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+                    decoration: const InputDecoration(
+                      hintText: 'Enter AI prompt keywords...',
+                      fillColor: Colors.transparent,
+                      filled: false,
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                    ),
+                    onChanged: (v) => setState(() {}),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Categories dropdown
+          DropdownButtonFormField<String>(
+            initialValue: _selectedAICategory,
+            decoration: const InputDecoration(labelText: 'AI Mode Filter'),
+            dropdownColor: CustomTheme.secondaryColor,
+            items: ['Cool', 'Funny', 'Cute', 'Scary', 'Anime'].map((cat) {
+              return DropdownMenuItem(value: cat, child: Text(cat));
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _selectedAICategory = val);
+            },
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: !isPremium && ['Scary', 'Anime'].contains(_selectedAICategory)
+                ? Center(
+                    child: Card(
+                      color: CustomTheme.secondaryColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.lock, size: 48, color: CustomTheme.accentColor),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Premium Required',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: CustomTheme.accentColor),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Unlock Scary & Anime themed suggestions!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: CustomTheme.textSecondary),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                ref.read(premiumProvider.notifier).togglePremium();
+                              },
+                              child: const Text('Get Premium'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: suggestions.length,
+                    itemBuilder: (context, index) {
+                      final name = suggestions[index];
+                      final isFav = favorites.contains(name);
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: CustomTheme.cardColor,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white10),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : CustomTheme.textSecondary),
+                                  onPressed: () => ref.read(favoritesProvider.notifier).toggleFavorite(name),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy, color: CustomTheme.accentColor),
+                                  onPressed: () => ClipboardHelper.copy(context, ref, name),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- 3. Clan Tags Tab ---
+  Widget _buildClanTagsTab(List<String> favorites) {
+    final generatedTag = '$_selectedClanTag$_selectedConnector${_clanNameController.text}';
+    final isFav = favorites.contains(generatedTag);
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: CustomTheme.cardColor,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: CustomTheme.cyberCyan.withValues(alpha: 0.3), width: 1.5),
+            ),
+            child: Column(
+              children: [
+                Text('CLAN PREVIEW', style: GoogleFonts.poppins(fontSize: 10, color: CustomTheme.textSecondary, letterSpacing: 2, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text(
+                  generatedTag,
+                  style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: CustomTheme.cyberCyan),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.copy, size: 18),
+                      label: const Text('Copy Tag'),
+                      onPressed: () => ClipboardHelper.copy(context, ref, generatedTag),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.white),
+                      onPressed: () => ref.read(favoritesProvider.notifier).toggleFavorite(generatedTag),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('Esports Clan Tag Configuration', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _clanNameController,
+            style: GoogleFonts.inter(color: Colors.white),
+            decoration: const InputDecoration(labelText: 'Player Nickname'),
+            onChanged: (v) => setState(() {}),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  initialValue: _selectedClanTag,
+                  decoration: const InputDecoration(labelText: 'Esports Prefix'),
+                  dropdownColor: CustomTheme.secondaryColor,
+                  items: ['RX', 'VLT', 'RGX', 'NXT', 'S8', '7H'].map((tag) {
+                    return DropdownMenuItem(value: tag, child: Text(tag));
+                  }).toList(),
+                  onChanged: (v) {
+                    if (v != null) setState(() => _selectedClanTag = v);
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  initialValue: _selectedConnector,
+                  decoration: const InputDecoration(labelText: 'Connector'),
+                  dropdownColor: CustomTheme.secondaryColor,
+                  items: ['丨', '•', '×', '〆', '-'].map((conn) {
+                    return DropdownMenuItem(value: conn, child: Text(conn));
+                  }).toList(),
+                  onChanged: (v) {
+                    if (v != null) setState(() => _selectedConnector = v);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Builder Tab ---
+  Widget _buildBuilderTab(String textInput, String platform, List<String> favorites) {
+    final p = _builderPrefix == 'None' ? '' : _builderPrefix;
+    final t = _builderClanTag == 'None' ? '' : _builderClanTag;
+    final c = _builderConnector == 'None' ? '' : _builderConnector;
+    final s = _builderSuffix == 'None' ? '' : _builderSuffix;
+
+    final String builtName = t.isNotEmpty ? '$p$t$c$textInput$s' : '$p$textInput$s';
+    final isFav = favorites.contains(builtName);
+    final rating = CompatibleGeneratorData.getRating(builtName, platform);
+    final double percent = rating.stars / 5.0;
+    final Color indicatorColor = rating.isSafe ? CustomTheme.successColor : CustomTheme.errorColor;
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 96.0),
