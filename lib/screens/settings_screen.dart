@@ -73,7 +73,7 @@ class SettingsScreen extends ConsumerWidget {
                 Text(
                   isPremium
                       ? 'Thank you for supporting Gaming Username Studio! All categories and premium filters are unlocked.'
-                      : 'Unlock all premium AI keywords filters, exclusive clan designs, esports style packs, and remove all ads.',
+                      : 'Unlock exclusive clan designs, esports style packs, and remove all ads.',
                   style: GoogleFonts.inter(
                     color: isPremium ? CustomTheme.primaryColor.withValues(alpha: 0.8) : CustomTheme.textSecondary,
                     fontSize: 13,

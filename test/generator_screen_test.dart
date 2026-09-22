@@ -28,12 +28,9 @@ void main() {
 
     // Verify app title and tabs are rendered
     expect(find.text('GAMING STUDIO'), findsOneWidget);
-    expect(find.text('Generate'), findsOneWidget);
-    expect(find.text('Builder'), findsOneWidget);
-    expect(find.text('AI Ideas'), findsOneWidget);
-    expect(find.text('Clan Tags'), findsOneWidget);
-    expect(find.text('Bio & Colors'), findsOneWidget);
-    expect(find.text('Roller'), findsOneWidget);
+    expect(find.text('Presets'), findsOneWidget);
+    expect(find.text('Decorator'), findsOneWidget);
     expect(find.text('Symbols'), findsOneWidget);
+    expect(find.text('Bios & Roller'), findsOneWidget);
   });
 }

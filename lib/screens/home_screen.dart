@@ -196,7 +196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ref.read(generatorTabProvider.notifier).state = 0;
                         ref.read(navigationIndexProvider.notifier).state = 1;
                       } else if (index == 1) {
-                        ref.read(generatorTabProvider.notifier).state = 3;
+                        ref.read(generatorTabProvider.notifier).state = 1;
                         ref.read(navigationIndexProvider.notifier).state = 1;
                       } else {
                         ref.read(navigationIndexProvider.notifier).state = 2;
@@ -260,16 +260,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ref.read(generatorTabProvider.notifier).state = 0;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
-                _buildActionTile('Clan Tags', Icons.group, CustomTheme.cyanGradient, () {
+                _buildActionTile('Custom Decorator', Icons.design_services, CustomTheme.cyanGradient, () {
+                  ref.read(generatorTabProvider.notifier).state = 1;
+                  ref.read(navigationIndexProvider.notifier).state = 1;
+                }),
+                _buildActionTile('Bios & Roller', Icons.casino, CustomTheme.goldCyanGradient, () {
                   ref.read(generatorTabProvider.notifier).state = 3;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
-                _buildActionTile('AI Generator', Icons.psychology, CustomTheme.goldCyanGradient, () {
-                  ref.read(generatorTabProvider.notifier).state = 2;
-                  ref.read(navigationIndexProvider.notifier).state = 1;
-                }),
                 _buildActionTile('Symbols', Icons.emoji_symbols, CustomTheme.goldGradient, () {
-                  ref.read(generatorTabProvider.notifier).state = 6;
+                  ref.read(generatorTabProvider.notifier).state = 2;
                   ref.read(navigationIndexProvider.notifier).state = 1;
                 }),
                 _buildActionTile('Collections', Icons.grid_view_rounded, CustomTheme.cyanGradient, () {
