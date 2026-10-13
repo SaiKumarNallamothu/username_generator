@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   const SizedBox(height: 24),
                   // App Title
                   Text(
-                    'GAMING STUDIO',
+                    'USERNAME GENERATOR',
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -128,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Create Your Legend',
+                    'Create Your Legendery Name',
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       color: CustomTheme.textSecondary,
